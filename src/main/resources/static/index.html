@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Health Manager | Real-time Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0F172A;
+            --secondary: #1E293B;
+            --accent: #3B82F6;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1E293B;
+            --gray-900: #0F172A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 32px 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            margin-bottom: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent) 0%, #2563EB 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .brand-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
+
+        .brand-text p {
+            font-size: 14px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ECFDF5;
+            color: var(--success);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+
+        .refresh-btn {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .refresh-btn:hover {
+            background: #2563EB;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), #2563EB);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .metric-subtitle {
+            font-size: 13px;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .metric-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .metric-change.positive {
+            background: #ECFDF5;
+            color: var(--success);
+        }
+
+        .metric-change.negative {
+            background: #FEF2F2;
+            color: var(--danger);
+        }
+
+        .data-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--gray-100);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .filter-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table thead th {
+            background: var(--gray-50);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.2s;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--gray-50);
+        }
+
+        .data-table tbody td {
+            padding: 18px 20px;
+            font-size: 14px;
+            color: var(--gray-700);
+        }
+
+        .table-id {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-500);
+        }
+
+        .table-asset {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .table-sensor {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .table-value {
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .severity-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .severity-badge.error {
+            background: #FEF2F2;
+            color: var(--danger);
+        }
+
+        .severity-badge.warning {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .severity-badge.info {
+            background: #EFF6FF;
+            color: var(--accent);
+        }
+
+        .severity-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .severity-badge.error .severity-indicator {
+            background: var(--danger);
+        }
+
+        .severity-badge.warning .severity-indicator {
+            background: var(--warning);
+        }
+
+        .severity-badge.info .severity-indicator {
+            background: var(--accent);
+        }
+
+        .table-timestamp {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--gray-500);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: #FEF2F2;
+            border-radius: 12px;
+            border: 2px dashed var(--danger);
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .error-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--danger);
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+
+        .error-action {
+            padding: 10px 24px;
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .error-action:hover {
+            background: #DC2626;
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            opacity: 0.3;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .empty-message {
+            font-size: 14px;
+            color: var(--gray-500);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .data-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="brand">
+                    <div class="logo">IH</div>
+                    <div class="brand-text">
+                        <h1>Industrial Health Manager</h1>
+                        <p>Real-time Asset Monitoring & Predictive Maintenance</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="status-badge">
+                        <span class="status-dot"></span>
+                        System Operational
+                    </div>
+                    <button class="refresh-btn" onclick="loadData()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Total Events</span>
+                    <div class="metric-icon" style="background: #EFF6FF; color: var(--accent);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="metric-value" id="totalEvents">-</div>
+                <div class="metric-subtitle">Recorded incidents</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Critical Events</span>
+                    <div class="metric-icon" style="background: #FEF2F2; color: var(--danger);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="metric-value" id="criticalEvents" style="color: var(--danger);">-</div>
+                <div class="metric-subtitle">Requiring immediate attention</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Avg Temperature</span>
+                    <div class="metric-icon" style="background: #FEF3C7; color: #D97706;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="metric-value" id="avgTemp" style="color: #D97706;">-</div>
+                <div class="metric-subtitle">Celsius monitoring</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <span class="metric-label">Avg Vibration</span>
+                    <div class="metric-icon" style="background: #ECFDF5; color: var(--success);">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="metric-value" id="avgVibration" style="color: var(--success);">-</div>
+                <div class="metric-subtitle">Millimeters per second</div>
+            </div>
+        </div>
+
+        <div class="data-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">Event Timeline</h2>
+                    <p class="section-subtitle">Real-time monitoring of critical industrial events</p>
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn active" onclick="filterEvents('all')">All</button>
+                    <button class="filter-btn" onclick="filterEvents('error')">Critical</button>
+                    <button class="filter-btn" onclick="filterEvents('temperature')">Temperature</button>
+                    <button class="filter-btn" onclick="filterEvents('vibration')">Vibration</button>
+                </div>
+            </div>
+            <div id="content"></div>
+        </div>
+    </div>
+
+    <script>
+        let allEvents = [];
+        let currentFilter = 'all';
+
+        async function loadData() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Loading data from sensors...</div>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('http://localhost:8080/assets/health');
+                
+                if (!response.ok) {
+                    throw new Error('Connection failed');
+                }
+
+                allEvents = await response.json();
+                updateMetrics(allEvents);
+                displayEvents(filterEventsByType(allEvents, currentFilter));
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="error-state">
+                        <div class="error-icon">⚠</div>
+                        <div class="error-title">Connection Error</div>
+                        <div class="error-message">
+                            Unable to connect to the monitoring system.<br>
+                            Please ensure the backend service is running.
+                        </div>
+                        <button class="error-action" onclick="loadData()">Retry Connection</button>
+                    </div>
+                `;
+            }
+        }
+
+        function updateMetrics(events) {
+            document.getElementById('totalEvents').textContent = events.length.toLocaleString();
+            document.getElementById('criticalEvents').textContent = 
+                events.filter(e => e.severity === 'ERROR').length.toLocaleString();
+            
+            const tempEvents = events.filter(e => e.sensorType === 'Temperatura');
+            const vibEvents = events.filter(e => e.sensorType === 'Vibração');
+            
+            const avgTemp = tempEvents.length > 0 
+                ? (tempEvents.reduce((sum, e) => sum + e.readingValue, 0) / tempEvents.length).toFixed(1) + '°C'
+                : 'N/A';
+            
+            const avgVib = vibEvents.length > 0 
+                ? (vibEvents.reduce((sum, e) => sum + e.readingValue, 0) / vibEvents.length).toFixed(2) + ' mm/s'
+                : 'N/A';
+            
+            document.getElementById('avgTemp').textContent = avgTemp;
+            document.getElementById('avgVibration').textContent = avgVib;
+        }
+
+        function filterEvents(type) {
+            currentFilter = type;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayEvents(filterEventsByType(allEvents, type));
+        }
+
+        function filterEventsByType(events, type) {
+            switch(type) {
+                case 'error':
+                    return events.filter(e => e.severity === 'ERROR');
+                case 'temperature':
+                    return events.filter(e => e.sensorType === 'Temperatura');
+                case 'vibration':
+                    return events.filter(e => e.sensorType === 'Vibração');
+                default:
+                    return events;
+            }
+        }
+
+        function displayEvents(events) {
+            const content = document.getElementById('content');
+            
+            if (events.length === 0) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <div class="empty-title">No Events Found</div>
+                        <div class="empty-message">No critical events have been recorded yet</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const sortedEvents = events.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            const recentEvents = sortedEvents.slice(0, 50);
+
+            let html = `
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Event ID</th>
+                                <th>Asset</th>
+                                <th>Sensor Type</th>
+                                <th>Reading Value</th>
+                                <th>Severity</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            recentEvents.forEach(event => {
+                const date = new Date(event.timestamp);
+                const formattedDate = date.toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                const value = event.sensorType === 'Temperatura' 
+                    ? event.readingValue.toFixed(2) + ' °C'
+                    : event.readingValue.toFixed(2) + ' mm/s';
+                
+                const severityClass = event.severity === 'ERROR' ? 'error' : 
+                                     event.severity === 'WARNING' ? 'warning' : 'info';
+
+                html += `
+                    <tr>
+                        <td><span class="table-id">#${String(event.id).padStart(6, '0')}</span></td>
+                        <td><span class="table-asset">${event.assetName}</span></td>
+                        <td><span class="table-sensor">${event.sensorType}</span></td>
+                        <td><span class="table-value">${value}</span></td>
+                        <td>
+                            <span class="severity-badge ${severityClass}">
+                                <span class="severity-indicator"></span>
+                                ${event.severity}
+                            </span>
+                        </td>
+                        <td><span class="table-timestamp">${formattedDate}</span></td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        loadData();
+        setInterval(loadData, 10000);
+    </script>
+</body>
+</html>
