@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: healthmanager-db
+    environment:
+      POSTGRES_DB: healthmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - health-network
+
+  app:
+    build: .
+    container_name: healthmanager-app
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: healthmanager
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - health-network
+
+volumes:
+  postgres_data:
+
+networks:
+  health-network:
+    driver: bridge
