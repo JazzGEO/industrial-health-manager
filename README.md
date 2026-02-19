@@ -63,10 +63,6 @@ cd industrial-health-manager
 docker-compose up --build
 ```
 
-**Acessar:**
-- Dashboard: http://localhost:8080
-- API: http://localhost:8080/assets/health
-
 ### Estrutura do Projeto
 ```
 src/main/
@@ -142,10 +138,6 @@ cd industrial-health-manager
 docker-compose up --build
 ```
 
-**Access:**
-- Dashboard: http://localhost:8080
-- API: http://localhost:8080/assets/health
-
 ### Project Structure
 ```
 src/main/
@@ -167,3 +159,4 @@ src/main/
 `GET /` - Monitoring dashboard
 
 ---
+
