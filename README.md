@@ -1,7 +1,7 @@
 # Industrial Health Manager
 
 
-Sistema de monitoramento industrial em tempo real com manutenção preditiva. Simula sensores, processa telemetria e persiste eventos críticos para análise.
+Sistema de monitoramento industrial em tempo real com manutenção preditiva. Simula sensores, processa telemetria e persiste eventos críticos para análise
 
 ![Dashboard Overview](dashboard.png)
 
